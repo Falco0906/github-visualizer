@@ -1,0 +1,478 @@
+{% load static %}
+<!doctype html>
+<html lang="en" data-bs-theme="light" id="html-root">
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>{{ profile.login }} • Developer Portfolio</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
+    <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.3/dist/chart.umd.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
+    <style>
+      :root {
+        --primary: #2563eb;
+        --secondary: #059669;
+        --accent: #dc2626;
+        --warning: #d97706;
+        --success: #16a34a;
+        --info: #0891b2;
+        --dark: #1e293b;
+        --light: #f8fafc;
+        --card-bg: #ffffff;
+        --border: #e2e8f0;
+        --text-muted: #64748b;
+        --gradient: linear-gradient(135deg, var(--primary), var(--secondary));
+        --shadow: 0 4px 6px -1px rgba(0,0,0,0.1);
+        --shadow-lg: 0 20px 25px -5px rgba(0,0,0,0.1);
+        --shadow-xl: 0 25px 50px -12px rgba(0,0,0,0.25);
+      }
+      
+      [data-bs-theme="dark"] {
+        --light: #0f172a;
+        --dark: #f1f5f9;
+        --card-bg: #1e293b;
+        --border: #334155;
+        --text-muted: #94a3b8;
+      }
+      
+      body { 
+        font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif; 
+        background: var(--light);
+        color: var(--dark);
+        transition: all 0.3s ease;
+        line-height: 1.6;
+      }
+      
+      .portfolio-card {
+        background: var(--card-bg);
+        border: 1px solid var(--border);
+        border-radius: 16px;
+        box-shadow: var(--shadow-xl);
+        overflow: hidden;
+        position: relative;
+      }
+      
+      .skill-badge {
+        background: var(--gradient);
+        color: white;
+        padding: 4px 12px;
+        border-radius: 20px;
+        font-size: 0.75rem;
+        font-weight: 600;
+        display: inline-block;
+        margin: 2px;
+      }
+      
+      .metric-card {
+        background: var(--card-bg);
+        border: 1px solid var(--border);
+        border-radius: 12px;
+        padding: 1.5rem;
+        text-align: center;
+        transition: all 0.3s ease;
+        position: relative;
+        overflow: hidden;
+      }
+      
+      .metric-card::before {
+        content: '';
+        position: absolute;
+        top: 0;
+        left: 0;
+        right: 0;
+        height: 4px;
+        background: var(--gradient);
+      }
+      
+      .metric-card:hover {
+        transform: translateY(-4px);
+        box-shadow: var(--shadow-lg);
+      }
+      
+      .score-bar {
+        background: #e2e8f0;
+        border-radius: 10px;
+        height: 8px;
+        overflow: hidden;
+        position: relative;
+      }
+      
+      .score-fill {
+        height: 100%;
+        background: var(--gradient);
+        border-radius: 10px;
+        transition: width 1s ease-in-out;
+      }
+      
+      .project-card {
+        background: var(--card-bg);
+        border: 1px solid var(--border);
+        border-radius: 12px;
+        padding: 1.25rem;
+        transition: all 0.3s ease;
+        cursor: pointer;
+        position: relative;
+        overflow: hidden;
+      }
+      
+      .project-card::before {
+        content: '';
+        position: absolute;
+        top: 0;
+        left: 0;
+        right: 0;
+        height: 3px;
+        background: var(--gradient);
+        transform: scaleX(0);
+        transition: transform 0.3s ease;
+      }
+      
+      .project-card:hover::before {
+        transform: scaleX(1);
+      }
+      
+      .project-card:hover {
+        transform: translateY(-2px);
+        box-shadow: var(--shadow-lg);
+        border-color: var(--primary);
+      }
+      
+      .level-badge {
+        padding: 4px 8px;
+        border-radius: 6px;
+        font-size: 0.75rem;
+        font-weight: 600;
+        text-transform: uppercase;
+        letter-spacing: 0.5px;
+      }
+      
+      .level-junior { background: #fef3c7; color: #92400e; }
+      .level-mid { background: #dbeafe; color: #1e40af; }
+      .level-senior { background: #d1fae5; color: #065f46; }
+      
+      .activity-high { background: #dcfce7; color: #166534; }
+      .activity-medium { background: #fef3c7; color: #92400e; }
+      .activity-low { background: #fee2e2; color: #991b1b; }
+      
+      .export-btn {
+        background: var(--gradient);
+        border: none;
+        color: white;
+        padding: 12px 24px;
+        border-radius: 8px;
+        font-weight: 600;
+        transition: all 0.3s ease;
+        cursor: pointer;
+        position: relative;
+        overflow: hidden;
+      }
+      
+      .export-btn:hover {
+        transform: translateY(-2px);
+        box-shadow: var(--shadow-lg);
+        color: white;
+      }
+      
+      .export-btn:active {
+        transform: translateY(0);
+      }
+      
+      .recruiter-insights {
+        background: linear-gradient(135deg, #f8fafc 0%, #e2e8f0 100%);
+        border: 1px solid var(--border);
+        border-radius: 12px;
+        padding: 1.5rem;
+        margin: 1rem 0;
+      }
+      
+      .insight-item {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        padding: 0.75rem 0;
+        border-bottom: 1px solid var(--border);
+      }
+      
+      .insight-item:last-child {
+        border-bottom: none;
+      }
+      
+      .chart-container {
+        position: relative;
+        height: 200px;
+        margin: 1rem 0;
+      }
+    </style>
+  </head>
+  <body>
+    <div class="container-fluid py-4">
+      <!-- Header Controls -->
+      <div class="row mb-4">
+        <div class="col-12 d-flex justify-content-between align-items-center">
+          <a href="/" class="btn btn-outline-secondary">
+            <i class="fas fa-arrow-left me-2"></i>Back to Search
+          </a>
+          <div class="d-flex gap-2">
+            <button class="btn btn-outline-secondary" onclick="toggleTheme()">
+              <i class="fas fa-moon" id="theme-icon"></i>
+            </button>
+            <button class="export-btn" onclick="exportAsPNG()">
+              <i class="fas fa-download me-2"></i>Export as PNG
+            </button>
+          </div>
+        </div>
+      </div>
+
+      <!-- Main Portfolio Card -->
+      <div class="portfolio-card" id="portfolio-card">
+        <!-- Header Section -->
+        <div class="p-4" style="background: var(--gradient); color: white;">
+          <div class="row align-items-center">
+            <div class="col-auto">
+              <img src="{{ profile.avatar_url }}" alt="avatar" class="rounded-circle" width="80" height="80" style="border: 3px solid white;">
+            </div>
+            <div class="col">
+              <h1 class="h3 mb-1 fw-bold">{{ profile.name|default:profile.login }}</h1>
+              <p class="mb-2 opacity-75">@{{ profile.login }} • {{ user_stats.years_experience|default:"1" }}+ years experience</p>
+              {% if profile.bio %}<p class="mb-0 small opacity-90">{{ profile.bio }}</p>{% endif %}
+            </div>
+            <div class="col-auto text-end">
+              <div class="d-flex gap-2 mb-2">
+                <span class="level-badge level-{{ user_stats.skill_level|default:'junior'|lower }}">{{ user_stats.skill_level|default:"Junior" }}</span>
+                <span class="level-badge activity-{{ user_stats.activity_level|default:'low'|lower }}">{{ user_stats.activity_level|default:"Low" }} Activity</span>
+              </div>
+              <div class="d-flex gap-3 small">
+                <span><i class="fas fa-users me-1"></i>{{ profile.followers }} followers</span>
+                <span><i class="fas fa-code me-1"></i>{{ user_stats.repository_count|default:"0" }} repos</span>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Key Metrics -->
+        <div class="p-4">
+          <div class="row g-3 mb-4">
+            <div class="col-md-3">
+              <div class="metric-card">
+                <div class="d-flex align-items-center justify-content-center mb-2">
+                  <i class="fas fa-star text-warning me-2"></i>
+                  <h4 class="mb-0">{{ user_stats.total_stars_received|default:"0" }}</h4>
+                </div>
+                <p class="text-muted mb-0 small">Total Stars</p>
+              </div>
+            </div>
+            <div class="col-md-3">
+              <div class="metric-card">
+                <div class="d-flex align-items-center justify-content-center mb-2">
+                  <i class="fas fa-code-branch text-info me-2"></i>
+                  <h4 class="mb-0">{{ user_stats.total_forks_received|default:"0" }}</h4>
+                </div>
+                <p class="text-muted mb-0 small">Total Forks</p>
+              </div>
+            </div>
+            <div class="col-md-3">
+              <div class="metric-card">
+                <div class="d-flex align-items-center justify-content-center mb-2">
+                  <i class="fas fa-language text-success me-2"></i>
+                  <h4 class="mb-0">{{ user_stats.languages_count|default:"0" }}</h4>
+                </div>
+                <p class="text-muted mb-0 small">Languages</p>
+              </div>
+            </div>
+            <div class="col-md-3">
+              <div class="metric-card">
+                <div class="d-flex align-items-center justify-content-center mb-2">
+                  <i class="fas fa-clock text-primary me-2"></i>
+                  <h4 class="mb-0">{{ user_stats.recent_activity|default:"0" }}</h4>
+                </div>
+                <p class="text-muted mb-0 small">Recent Updates</p>
+              </div>
+            </div>
+          </div>
+
+          <!-- Recruiter Insights -->
+          <div class="recruiter-insights">
+            <h5 class="mb-3"><i class="fas fa-chart-line me-2"></i>Recruiter Insights</h5>
+            <div class="row">
+              <div class="col-md-6">
+                <div class="insight-item">
+                  <span><strong>Collaboration Score</strong></span>
+                  <div class="d-flex align-items-center">
+                    <div class="score-bar me-2" style="width: 100px;">
+                      <div class="score-fill" style="width: {{ user_stats.collaboration_score|default:"0" }}%"></div>
+                    </div>
+                    <span class="small">{{ user_stats.collaboration_score|default:"0" }}/100</span>
+                  </div>
+                </div>
+                <div class="insight-item">
+                  <span><strong>Innovation Score</strong></span>
+                  <div class="d-flex align-items-center">
+                    <div class="score-bar me-2" style="width: 100px;">
+                      <div class="score-fill" style="width: {{ user_stats.innovation_score|default:"0" }}%"></div>
+                    </div>
+                    <span class="small">{{ user_stats.innovation_score|default:"0" }}/100</span>
+                  </div>
+                </div>
+              </div>
+              <div class="col-md-6">
+                <div class="insight-item">
+                  <span><strong>Consistency Score</strong></span>
+                  <div class="d-flex align-items-center">
+                    <div class="score-bar me-2" style="width: 100px;">
+                      <div class="score-fill" style="width: {{ user_stats.consistency_score|default:"0" }}%"></div>
+                    </div>
+                    <span class="small">{{ user_stats.consistency_score|default:"0" }}/100</span>
+                  </div>
+                </div>
+                <div class="insight-item">
+                  <span><strong>Project Diversity</strong></span>
+                  <span class="small">
+                    {% for project_type in user_stats.project_diversity|default:"" %}
+                      <span class="skill-badge">{{ project_type }}</span>
+                    {% empty %}
+                      <span class="text-muted">Not specified</span>
+                    {% endfor %}
+                  </span>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <!-- Featured Projects -->
+          <div class="mb-4">
+            <h5 class="mb-3"><i class="fas fa-rocket me-2"></i>Featured Projects</h5>
+            <div class="row g-3">
+              {% for repo in repos %}
+              <div class="col-lg-4 col-md-6">
+                <div class="project-card" onclick="window.open('{{ repo.html_url }}', '_blank')">
+                  <div class="d-flex justify-content-between align-items-start mb-2">
+                    <h6 class="mb-0 fw-bold">{{ repo.name }}</h6>
+                    <div class="d-flex gap-1">
+                      <span class="badge bg-warning text-dark">⭐ {{ repo.stargazers_count }}</span>
+                      <span class="badge bg-info">🍴 {{ repo.forks_count }}</span>
+                    </div>
+                  </div>
+                  <p class="small text-muted mb-2">{{ repo.description|default:"No description" }}</p>
+                  <div class="d-flex justify-content-between align-items-center">
+                    {% if repo.language %}
+                    <span class="skill-badge">{{ repo.language }}</span>
+                    {% endif %}
+                    <small class="text-muted">
+                      {% if repo.updated_at %}{{ repo.updated_at|date:"M d" }}{% endif %}
+                    </small>
+                  </div>
+                </div>
+              </div>
+              {% empty %}
+              <div class="col-12 text-center py-4">
+                <i class="fas fa-folder-open fa-3x text-muted mb-3"></i>
+                <p class="text-muted">No repositories found.</p>
+              </div>
+              {% endfor %}
+            </div>
+          </div>
+
+          <!-- Contact & Links -->
+          <div class="p-3" style="background: var(--card-bg); border: 1px solid var(--border); border-radius: 12px;">
+            <h6 class="mb-3"><i class="fas fa-link me-2"></i>Contact & Links</h6>
+            <div class="row g-3">
+              <div class="col-md-6">
+                <a href="{{ profile.html_url }}" target="_blank" class="btn btn-outline-primary w-100">
+                  <i class="fab fa-github me-2"></i>GitHub Profile
+                </a>
+              </div>
+              {% if profile.blog %}
+              <div class="col-md-6">
+                <a href="{{ profile.blog }}" target="_blank" class="btn btn-outline-secondary w-100">
+                  <i class="fas fa-globe me-2"></i>Personal Website
+                </a>
+              </div>
+              {% endif %}
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+    <script>
+      // Theme toggle
+      function toggleTheme() {
+        const html = document.getElementById('html-root');
+        const icon = document.getElementById('theme-icon');
+        const currentTheme = html.getAttribute('data-bs-theme');
+        const newTheme = currentTheme === 'dark' ? 'light' : 'dark';
+        
+        html.setAttribute('data-bs-theme', newTheme);
+        icon.className = newTheme === 'dark' ? 'fas fa-sun' : 'fas fa-moon';
+        localStorage.setItem('theme', newTheme);
+      }
+      
+      // Load saved theme
+      const savedTheme = localStorage.getItem('theme') || 'light';
+      document.getElementById('html-root').setAttribute('data-bs-theme', savedTheme);
+      document.getElementById('theme-icon').className = savedTheme === 'dark' ? 'fas fa-sun' : 'fas fa-moon';
+
+      // PNG Export functionality
+      async function exportAsPNG() {
+        const button = document.querySelector('.export-btn');
+        const originalText = button.innerHTML;
+        
+        // Show loading state
+        button.innerHTML = '<i class="fas fa-spinner fa-spin me-2"></i>Generating PNG...';
+        button.disabled = true;
+        
+        try {
+          const card = document.getElementById('portfolio-card');
+          const canvas = await html2canvas(card, {
+            backgroundColor: '#ffffff',
+            scale: 2,
+            useCORS: true,
+            allowTaint: true,
+            width: card.offsetWidth,
+            height: card.offsetHeight
+          });
+          
+          // Create download link
+          const link = document.createElement('a');
+          link.download = '{{ profile.login }}-portfolio.png';
+          link.href = canvas.toDataURL('image/png');
+          link.click();
+          
+          // Show success state
+          button.innerHTML = '<i class="fas fa-check me-2"></i>Downloaded!';
+          setTimeout(() => {
+            button.innerHTML = originalText;
+            button.disabled = false;
+          }, 2000);
+          
+        } catch (error) {
+          console.error('Export failed:', error);
+          button.innerHTML = '<i class="fas fa-exclamation-triangle me-2"></i>Export Failed';
+          setTimeout(() => {
+            button.innerHTML = originalText;
+            button.disabled = false;
+          }, 2000);
+        }
+      }
+
+      // Animate score bars on load
+      function animateScoreBars() {
+        const scoreBars = document.querySelectorAll('.score-fill');
+        scoreBars.forEach(bar => {
+          const width = bar.style.width;
+          bar.style.width = '0%';
+          setTimeout(() => {
+            bar.style.width = width;
+          }, 500);
+        });
+      }
+
+      // Initialize animations
+      document.addEventListener('DOMContentLoaded', function() {
+        animateScoreBars();
+      });
+    </script>
+  </body>
+</html>
