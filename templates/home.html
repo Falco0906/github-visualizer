@@ -1,0 +1,442 @@
+<!doctype html>
+<html lang="en" data-bs-theme="light" id="html-root">
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>GitHub Portfolio Visualizer</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="icon" href="/static/favicon.ico">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
+    <style>
+      :root {
+        --primary: #4f46e5;
+        --secondary: #22c55e;
+        --accent: #f59e0b;
+        --dark: #1f2937;
+        --light: #f8fafc;
+        --gradient: linear-gradient(135deg, var(--primary), var(--secondary));
+        --shadow: 0 20px 40px rgba(0,0,0,0.1);
+        --shadow-lg: 0 25px 50px rgba(0,0,0,0.15);
+      }
+      
+      [data-bs-theme="dark"] {
+        --light: #0d1117;
+        --dark: #ffffff;
+        --bg-dark: #0d1117;
+        --text-primary: rgba(255, 255, 255, 0.9);
+        --text-secondary: rgba(255, 255, 255, 0.7);
+      }
+
+      [data-bs-theme="light"] {
+        --bg-dark: #ffffff;
+        --text-primary: rgba(0, 0, 0, 0.9);
+        --text-secondary: rgba(0, 0, 0, 0.7);
+      }
+      
+      body {
+            font-family: -apple-system, BlinkMacSystemFont, 'SF Pro Display', sans-serif;
+            background: var(--bg-dark);
+            color: var(--text-primary);
+            min-height: 100vh;
+            background-attachment: fixed;
+            overflow-x: hidden;
+        }
+
+        /* Animated background gradient blobs */
+        .bg-gradient {
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            overflow: hidden;
+            z-index: -1;
+            background: var(--light);
+        }
+
+        .gradient-blob {
+            position: absolute;
+            filter: blur(40px);
+            opacity: 0.7;
+            mix-blend-mode: plus-lighter;
+            animation: float 20s ease-in-out infinite;
+            border-radius: 50%;
+        }
+
+        .blob-1 {
+            width: 800px;
+            height: 800px;
+            background: radial-gradient(circle at center, rgba(37, 99, 235, 0.2), rgba(37, 99, 235, 0));
+            top: -200px;
+            right: -100px;
+            animation-delay: -2s;
+        }
+
+        .blob-2 {
+            width: 600px;
+            height: 600px;
+            background: radial-gradient(circle at center, rgba(5, 150, 105, 0.2), rgba(5, 150, 105, 0));
+            bottom: -100px;
+            left: -100px;
+            animation-delay: -1s;
+        }
+
+        .blob-3 {
+            width: 400px;
+            height: 400px;
+            background: radial-gradient(circle at center, rgba(124, 58, 237, 0.2), rgba(124, 58, 237, 0));
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+        }
+
+        @keyframes float {
+            0%, 100% {
+                transform: translate(0, 0) rotate(0deg) scale(1);
+            }
+            25% {
+                transform: translate(50px, -50px) rotate(5deg) scale(1.1);
+            }
+            50% {
+                transform: translate(-25px, 25px) rotate(-5deg) scale(0.9);
+            }
+            75% {
+                transform: translate(-50px, -25px) rotate(3deg) scale(1.05);
+            }
+        }
+      
+      .hero { 
+        min-height: 100vh; 
+        display: grid; 
+        place-items: center; 
+        background: radial-gradient(1200px 500px at 50% -10%, rgba(34, 197, 94, 0.1), transparent), 
+                    radial-gradient(800px 400px at 90% 10%, rgba(79, 70, 229, 0.1), transparent),
+                    linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        position: relative;
+        overflow: hidden;
+      }
+      
+      .hero::before {
+        content: '';
+        position: absolute;
+        top: 0;
+        left: 0;
+        right: 0;
+        bottom: 0;
+        background: url('data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100"><defs><pattern id="grain" width="100" height="100" patternUnits="userSpaceOnUse"><circle cx="25" cy="25" r="1" fill="white" opacity="0.1"/><circle cx="75" cy="75" r="1" fill="white" opacity="0.1"/><circle cx="50" cy="10" r="0.5" fill="white" opacity="0.1"/></pattern></defs><rect width="100" height="100" fill="url(%23grain)"/></svg>');
+        animation: float 20s ease-in-out infinite;
+      }
+      
+      @keyframes float {
+        0%, 100% { transform: translateY(0px) rotate(0deg); }
+        50% { transform: translateY(-20px) rotate(1deg); }
+      }
+      
+      .glass { 
+        backdrop-filter: blur(20px); 
+        background: rgba(255, 255, 255, 0.95);
+        border: 1px solid rgba(0, 0, 0, 0.1); 
+        border-radius: 12px; 
+        box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+        transition: all 0.3s ease;
+      }
+
+      [data-bs-theme="dark"] .glass {
+        background: rgba(22, 27, 34, 0.95);
+        border-color: rgba(48, 54, 61, 0.95);
+      }
+      
+      .glass:hover {
+        transform: translateY(-5px);
+        border-color: rgba(64, 196, 255, 0.3);
+        box-shadow: 0 8px 12px rgba(0, 0, 0, 0.15);
+      }
+      
+      [data-bs-theme="dark"] .glass i {
+        background: linear-gradient(135deg, #0087ff, #00d4ff);
+        background-clip: text;
+        -webkit-background-clip: text;
+        -webkit-text-fill-color: transparent;
+      }
+
+      [data-bs-theme="dark"] .glass h4 {
+        color: rgba(255, 255, 255, 0.9);
+      }
+
+      [data-bs-theme="dark"] .glass p {
+        color: rgba(255, 255, 255, 0.7);
+      }
+      
+      .search-container {
+        position: relative;
+        z-index: 10;
+      }
+      
+      .search-input {
+        border: none;
+        background: rgba(255, 255, 255, 0.95);
+        backdrop-filter: blur(10px);
+        border-radius: 12px;
+        padding: 20px 30px;
+        font-size: 1.1rem;
+        border: 1px solid rgba(0, 0, 0, 0.1);
+        color: var(--text-primary);
+        box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+        transition: all 0.3s ease;
+      }
+
+      [data-bs-theme="dark"] .search-input {
+        background: rgba(22, 27, 34, 0.95);
+        border-color: rgba(48, 54, 61, 0.95);
+        color: var(--text-primary);
+      }
+
+      [data-bs-theme="dark"] .search-input::placeholder {
+        color: rgba(255, 255, 255, 0.5);
+      }
+      
+      .search-input:focus {
+        transform: scale(1.01);
+        border-color: rgba(64, 196, 255, 0.5);
+        box-shadow: 0 0 0 2px rgba(64, 196, 255, 0.2);
+        outline: none;
+      }
+      
+      .search-btn {
+        background: linear-gradient(135deg, #0087ff, #00d4ff);
+        border: none;
+        border-radius: 12px;
+        padding: 15px 30px;
+        font-weight: 600;
+        color: white;
+        transition: all 0.3s ease;
+        position: relative;
+        overflow: hidden;
+      }
+      
+      .search-btn::before {
+        content: '';
+        position: absolute;
+        top: 0;
+        left: -100%;
+        width: 100%;
+        height: 100%;
+        background: linear-gradient(90deg, transparent, rgba(255,255,255,0.2), transparent);
+        transition: left 0.5s;
+      }
+      
+      .search-btn:hover::before {
+        left: 100%;
+      }
+      
+      .search-btn:hover {
+        transform: translateY(-2px);
+        box-shadow: var(--shadow-lg);
+      }
+      
+      .feature-card {
+        transition: all 0.3s ease;
+        cursor: pointer;
+      }
+      
+      .feature-card:hover {
+        transform: translateY(-10px) scale(1.02);
+      }
+      
+      .theme-toggle {
+        position: fixed;
+        top: 20px;
+        right: 20px;
+        z-index: 1000;
+        background: rgba(255,255,255,0.1);
+        backdrop-filter: blur(10px);
+        border: 1px solid rgba(255,255,255,0.2);
+        border-radius: 50px;
+        padding: 10px;
+        cursor: pointer;
+        transition: all 0.3s ease;
+      }
+      
+      .theme-toggle:hover {
+        background: rgba(255,255,255,0.2);
+        transform: scale(1.1);
+      }
+      
+      .trending-users {
+        position: absolute;
+        bottom: 20px;
+        left: 50%;
+        transform: translateX(-50%);
+        display: flex;
+        gap: 10px;
+        flex-wrap: wrap;
+        justify-content: center;
+        z-index: 10;
+      }
+      
+      .trending-user {
+        background: rgba(255,255,255,0.1);
+        backdrop-filter: blur(10px);
+        border: 1px solid rgba(255,255,255,0.2);
+        border-radius: 20px;
+        padding: 8px 16px;
+        font-size: 0.9rem;
+        cursor: pointer;
+        transition: all 0.3s ease;
+        text-decoration: none;
+        color: inherit;
+      }
+      
+      .trending-user:hover {
+        background: rgba(255,255,255,0.2);
+        transform: translateY(-2px);
+        color: inherit;
+        text-decoration: none;
+      }
+      
+      .pulse {
+        animation: pulse 2s infinite;
+      }
+      
+      @keyframes pulse {
+        0% { transform: scale(1); }
+        50% { transform: scale(1.05); }
+        100% { transform: scale(1); }
+      }
+      
+      .fade-in {
+        animation: fadeIn 0.8s ease-out;
+      }
+      
+      @keyframes fadeIn {
+        from { opacity: 0; transform: translateY(30px); }
+        to { opacity: 1; transform: translateY(0); }
+      }
+      
+      .loading {
+        display: none;
+        position: absolute;
+        right: 15px;
+        top: 50%;
+        transform: translateY(-50%);
+      }
+      
+      .spinner {
+        width: 20px;
+        height: 20px;
+        border: 2px solid #f3f3f3;
+        border-top: 2px solid var(--primary);
+        border-radius: 50%;
+        animation: spin 1s linear infinite;
+      }
+      
+      @keyframes spin {
+        0% { transform: rotate(0deg); }
+        100% { transform: rotate(360deg); }
+      }
+    </style>
+  </head>
+  <body>
+    <div class="theme-toggle" onclick="toggleTheme()">
+      <i class="fas fa-moon" id="theme-icon"></i>
+    </div>
+    
+    <div class="hero-section">
+        <div class="container">
+            <div class="row align-items-center">
+                <div class="col-lg-6 hero-content">
+                    <h1 class="hero-title">Showcase Your GitHub Portfolio</h1>
+                    <p class="hero-subtitle">Transform your GitHub profile into a stunning portfolio with beautiful visualizations and insights that recruiters love.</p>
+                    
+                    <div class="search-box">
+                        <form action="{% url 'search_redirect' %}" method="GET" id="searchForm">
+                            <input type="text" 
+                                   name="q" 
+                                   class="search-input" 
+                                   placeholder="Enter GitHub username..." 
+                                   required
+                                   autocomplete="off"
+                                   spellcheck="false">
+                            <div class="loading" id="loading">
+                                <div class="spinner"></div>
+                            </div>
+                        </form>
+                    </div>
+                </div>
+                <div class="col-lg-6">
+                    <div class="portfolio-preview">
+                        <div class="portfolio-card-wrapper" id="tilt-card">
+                            {% include "example_portfolio_card.html" %}
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <section class="py-5">
+      <div class="container">
+        <div class="row g-4">
+          <div class="col-md-4">
+            <div class="p-4 glass feature-card h-100">
+              <div class="text-center">
+                <i class="fas fa-star fa-3x text-warning mb-3"></i>
+                <h4>Top Repositories</h4>
+                <p>Discover the most starred and forked projects with detailed metrics and quick GitHub links.</p>
+              </div>
+            </div>
+          </div>
+          <div class="col-md-4">
+            <div class="p-4 glass feature-card h-100">
+              <div class="text-center">
+                <i class="fas fa-chart-pie fa-3x text-info mb-3"></i>
+                <h4>Language Analytics</h4>
+                <p>Visualize programming language distribution with interactive charts and usage statistics.</p>
+              </div>
+            </div>
+          </div>
+          <div class="col-md-4">
+            <div class="p-4 glass feature-card h-100">
+              <div class="text-center">
+                <i class="fas fa-list fa-3x text-success mb-3"></i>
+                <h4>Complete Overview</h4>
+                <p>Browse all public repositories in an organized, sortable table with advanced filtering.</p>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+    <script>
+      // Theme toggle
+      function toggleTheme() {
+        const html = document.getElementById('html-root');
+        const icon = document.getElementById('theme-icon');
+        const currentTheme = html.getAttribute('data-bs-theme');
+        const newTheme = currentTheme === 'dark' ? 'light' : 'dark';
+        
+        html.setAttribute('data-bs-theme', newTheme);
+        icon.className = newTheme === 'dark' ? 'fas fa-sun' : 'fas fa-moon';
+        localStorage.setItem('theme', newTheme);
+      }
+      
+      // Load saved theme
+      const savedTheme = localStorage.getItem('theme') || 'light';
+      document.getElementById('html-root').setAttribute('data-bs-theme', savedTheme);
+      document.getElementById('theme-icon').className = savedTheme === 'dark' ? 'fas fa-sun' : 'fas fa-moon';
+      
+      // Search form loading state
+      document.getElementById('searchForm').addEventListener('submit', function() {
+        document.getElementById('loading').style.display = 'block';
+      });
+      
+      // Add pulse animation to search button
+      document.querySelector('.search-btn').classList.add('pulse');
+    </script>
+  </body>
+</html>
