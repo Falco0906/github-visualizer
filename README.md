@@ -23,30 +23,3 @@ python manage.py migrate
 python manage.py createsuperuser
 python manage.py runserver
 ```
-
-Open http://localhost:8000 and click "Sign in with GitHub".
-
-### Environment Variables (.env)
-- `DEBUG` True/False
-- `SECRET_KEY` random string
-- `ALLOWED_HOSTS` comma-separated
-- `GITHUB_KEY` your OAuth client ID
-- `GITHUB_SECRET` your OAuth client secret
-- `GITHUB_SCOPE` read:user,user:email,repo
-- `SITE_URL` public site URL (http://localhost:8000 during dev)
-
-### GitHub OAuth App Setup
-1. Create a new OAuth App at https://github.com/settings/developers
-2. Homepage URL: your SITE_URL
-3. Authorization callback URL: `SITE_URL/auth/complete/github/`
-4. Put client ID/secret into `.env`
-
-### Apps
-- `accounts`: dashboard, profile editing, preferences
-- `portfolio`: models for snapshots, repos, activities, highlights, public pages
-- `githubapi`: API client and ingestion service
-
-### Production Notes
-- Use `whitenoise` for static files
-- Set `DEBUG=False`, a strong `SECRET_KEY`, and `ALLOWED_HOSTS`
-- Prefer Postgres (install `psycopg2-binary` and configure `DATABASES`)
