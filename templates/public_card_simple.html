@@ -310,8 +310,6 @@
       }
 
       /* GitHub-style contribution graph */
-          <style>
-      <style>
       :root {
         --card-bg-light: rgba(255, 255, 255, 0.95);
         --card-bg-dark: rgba(22, 27, 34, 0.95);
@@ -833,6 +831,21 @@
         
         card.addEventListener('touchend', resetTilt);
       }
+    </script>
+    <!-- React (progressive enhancement, no UI changes) -->
+    <div id="react-root" style="display: none"></div>
+    <script src="https://unpkg.com/react@18/umd/react.production.min.js" crossorigin></script>
+    <script src="https://unpkg.com/react-dom@18/umd/react-dom.production.min.js" crossorigin></script>
+    <script>
+      // Mount a no-op React app to ensure React is available without affecting UI
+      (function () {
+        var rootEl = document.getElementById('react-root');
+        if (!rootEl || !window.React || !window.ReactDOM) return;
+        function App() { return null; }
+        var root = ReactDOM.createRoot(rootEl);
+        root.render(React.createElement(App));
+        console.log('[React] Mounted (no-op)');
+      })();
     </script>
   </body>
 </html>
